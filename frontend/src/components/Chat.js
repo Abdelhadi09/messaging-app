@@ -7,21 +7,28 @@ const Chat = ({ user }) => {
   const [content, setContent] = useState('');
   const [recipient, setRecipient] = useState('');
 
+  // Use environment variable for backend URL
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
   useEffect(() => {
     const fetchMessages = async () => {
-      const response = await axios.get('http://localhost:5000/api/messages', {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-      setMessages(response.data);
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/messages`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        setMessages(response.data);
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      }
     };
     fetchMessages();
-  }, [user]);
+  }, [user, API_BASE_URL]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/messages',
+        `${API_BASE_URL}/api/messages`,
         { content, recipient },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -30,6 +37,7 @@ const Chat = ({ user }) => {
       setRecipient('');
     } catch (error) {
       alert('Failed to send message!');
+      console.error(error);
     }
   };
 
