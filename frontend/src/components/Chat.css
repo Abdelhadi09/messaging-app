@@ -1,67 +1,98 @@
 .chat-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 0 auto;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.chat-title {
-  font-size: 24px;
+.user-list {
+  width: 250px;
+  background: #f4f4f4;
+  padding: 1rem;
+  border-right: 1px solid #ccc;
+}
+
+.user {
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.user:hover {
+  background-color: #e0e0e0;
+}
+
+.user.active {
+  background-color: #d0d0ff;
   font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
 }
 
-.messages-container {
-  width: 100%;
-  max-height: 300px;
+.chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.messages {
+  flex: 1;
   overflow-y: auto;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #e6f7ff;
-  border-radius: 5px;
-  color: #333;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  max-width: 70%;
+  width: 25%;
+  border-radius: 24px;
+  
 }
 
-.message strong {
-  color: #007bff;
+.message.sent {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+  display: flex;
+  justify-content: space-between;
+}
+
+.message.received {
+  background-color: #f1f0f0;
+  align-self: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.meta {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.text {
+  margin-top: 0.25rem;
 }
 
 .message-form {
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  gap: 0.5rem;
 }
 
-.input-recipient,
 .input-message {
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 
 .send-button {
-  padding: 10px;
+  padding: 0.5rem 1rem;
   background-color: #007bff;
-  color: #fff;
+  color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 4px;
   cursor: pointer;
 }
 

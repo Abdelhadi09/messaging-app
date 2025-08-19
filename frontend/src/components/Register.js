@@ -11,7 +11,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/api/auth/register`, { username, password });
+      await axios.post(`${API_BASE_URL}/api/auth/register` , { username, password });
       alert('Registration successful!');
     } catch (error) {
       alert('Registration failed!');
