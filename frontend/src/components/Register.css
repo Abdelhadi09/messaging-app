@@ -1,12 +1,37 @@
 /* Register.css */
+#root {
+height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 
+body{
+width: 100dvw;
+  height: 100%;
+  padding: 0%;
+  margin: 0;
+}
 .register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Sour Gummy", sans-serif !important;
+  height: 100%;
+  background-image: url('../images/web.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100dvw;
+}
+.register-form {
   max-width: 400px;
   margin: 60px auto;
   padding: 40px;
-  background-color: #ffffff;
+  background-color: #fef5fb;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: rgba(254, 245, 251, 0.85);
 }
 
 .register-container h2 {
@@ -22,32 +47,46 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
+  font-family: "Sour Gummy", sans-serif;
 }
 
 .register-container button {
   width: 100%;
   padding: 12px;
-  background-color: #28a745;
+  background-color: #f9cbee;
   color: white;
   border: none;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-family: "Sour Gummy", sans-serif;
 }
 
 .register-container button:hover {
-  background-color: #218838;
+  background-color: #f8b3e0;
 }
 /* Mobile responsiveness */
 @media (max-width: 480px) {
+  #root {
+    height: 100vh;
+    width: 100vw;
+  }
   .register-container {
-    margin: 20px;
-    padding: 24px;
+      background-image: url('../images/téléchargement.jpg') ;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0px;
+    padding: 0px;
     box-shadow: none;
     border: 1px solid #ddd;
+    width: 100vw;
   }
-
+.register-form {
+    width: 70%;
+   
+  }
   .register-container h2 {
     font-size: 20px;
     margin-bottom: 16px;
@@ -61,10 +100,14 @@
 }
 
 @media (max-width: 768px) {
+    #root {
+    height: 100vh;
+    width: 100vw;
+  }
   .register-container {
-    max-width: 90%;
-    margin: 40px auto;
-    padding: 32px;
+    width: 100vw;
+    margin: 0px;
+    padding: 0px;
   }
 
   .register-container h2 {

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Pusher from 'pusher-js';
 import './Chat.css';
+import Sidebar from './Sidebar';
+import MessageList from './MessageList';
+import MessageForm from './MessageForm';
 
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
@@ -12,6 +15,9 @@ const Chat = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false); // 👈 Sidebar toggle
+
+
+  const messagesEndRef = React.useRef(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -67,6 +73,22 @@ const Chat = ({ user }) => {
       }
     });
 
+    channel.bind('message-delivered', (data) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg._id === data.messageId ? { ...msg, delivered: true } : msg
+        )
+      );
+    });
+
+    channel.bind('message-seen', (data) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg._id === data.messageId ? { ...msg, seen: true } : msg
+        )
+      );
+    });
+
     return () => {
       channel.unbind_all();
       channel.unsubscribe();
@@ -116,6 +138,38 @@ const Chat = ({ user }) => {
     }
   };
 
+  // Update message status (delivered or seen)
+  const updateMessageStatus = async (messageId, status) => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/api/messages/status`,
+        { messageId, status },
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+    } catch (err) {
+      console.error(`Error updating message status to ${status}:`, err);
+    }
+  };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (!lastMessage.delivered) {
+        updateMessageStatus(lastMessage._id, 'delivered');
+      }
+    }
+  }, [messages]);
+
+  const handleSeen = (messageId) => {
+    updateMessageStatus(messageId, 'seen');
+  };
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   return (
     <div className="chat-container">
       {/* Hamburger for mobile */}
@@ -124,84 +178,37 @@ const Chat = ({ user }) => {
       </button>
 
       {/* Sidebar */}
-      <aside className={`user-list ${showSidebar ? 'visible' : ''}`}>
-        <h3>Conversations</h3>
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search for users..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              searchUsers(e.target.value);
-            }}
-            className="input-search"
-          />
-        </div>
-
-        <div className="search-results">
-          {searchResults.map((user, index) => (
-            <div
-              key={index}
-              className="search-result"
-              onClick={() => {
-                setRecipient(user.username);
-                setSearchQuery('');
-                setSearchResults([]);
-                setShowSidebar(false);
-              }}
-            >
-              {user.username}
-            </div>
-          ))}
-        </div>
-
-        {users.map((username, index) => (
-          <div
-            key={index}
-            className={`user ${username === recipient ? 'active' : ''}`}
-            onClick={() => {
-              setRecipient(username);
-              setShowSidebar(false);
-            }}
-          >
-            {username}
-          </div>
-        ))}
-      </aside>
+      <Sidebar
+        users={users}
+        recipient={recipient}
+        setRecipient={setRecipient}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchResults={searchResults}
+        searchUsers={searchUsers}
+      />
 
       {/* Chat box */}
       <main className="chat-box">
         <h2>Chat with {recipient || '...'}</h2>
-        <div className="messages">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`message ${msg.sender === user.username ? 'sent' : 'received'}`}
-            >
-              <div className="message-content">{msg.content}</div>
-              <div className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</div>
-            </div>
-          ))}
-        </div>
+        <MessageList
+          messages={messages}
+          user={user}
+          handleSeen={handleSeen}
+          messagesEndRef={messagesEndRef}
+        />
 
         {typing && <div className="typing-indicator">{recipient} is typing...</div>}
 
         {recipient && (
-          <form onSubmit={sendMessage} className="message-form">
-            <input
-              type="text"
-              placeholder="Type your message..."
-              value={content}
-              onChange={(e) => {
-                setContent(e.target.value);
-                handleTyping();
-              }}
-              required
-              className="input-message"
-            />
-            <button type="submit" className="send-button">Send</button>
-          </form>
+          <MessageForm
+            content={content}
+            setContent={setContent}
+            handleTyping={handleTyping}
+            sendMessage={sendMessage}
+          />
         )}
       </main>
     </div>

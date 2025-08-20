@@ -36,6 +36,7 @@ const Register = ({ setUser }) => {
 
   return (
     <div className="register-container">
+      <div className='register-form'>
       <form onSubmit={handleRegister}>
         <h2>Register</h2>
         <input
@@ -55,6 +56,7 @@ const Register = ({ setUser }) => {
         <button type="submit">Register</button>
       </form>
       <ToastContainer />
+      </div>
     </div>
   );
 };

@@ -35,7 +35,8 @@ const Login = ({ setUser }) => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-container " >
+      <div className='login-form'>
       <form onSubmit={handleLogin}>
         <h2>Login</h2>
         <input
@@ -58,6 +59,7 @@ const Login = ({ setUser }) => {
         </p>
       </form>
       <ToastContainer />
+      </div>
     </div>
   );
 };

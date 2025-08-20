@@ -1,12 +1,40 @@
 /* Login.css */
 
+#root {
+height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body{
+width: 100dvw;
+  height: 100%;
+  padding: 0%;
+  margin: 0;
+}
+
 .login-container {
+display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Sour Gummy", sans-serif !important;
+  height: 100%;
+  background-image: url('../images/web.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100dvw;
+}
+.login-form {
   max-width: 400px;
   margin: 60px auto;
   padding: 40px;
-  background-color: #ffffff;
+  background-color: #fef5fb;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: rgba(254, 245, 251, 0.85);
+
 }
 
 .login-container h2 {
@@ -22,22 +50,24 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
+  font-family: "Sour Gummy", sans-serif;
 }
 
 .login-container button {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #f9cbee;
   color: white;
   border: none;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-family: "Sour Gummy", sans-serif;
 }
 
 .login-container button:hover {
-  background-color: #0056b3;
+  background-color: #f8b3e0;
 }
 
 .login-container p {
@@ -47,18 +77,31 @@
 }
 
 .login-container a {
-  color: #007bff;
+  color: #f8b3e0;
   text-decoration: none;
+  font-weight: bold;
 }
 
 @media (max-width: 480px) {
+  #root {
+    height: 100vh;
+    width: 100vw;
+  }
   .login-container {
-    margin: 20px;
-    padding: 24px;
+     background-image: url('../images/téléchargement.jpg') ;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0px;
+    padding: 0px;
     box-shadow: none;
     border: 1px solid #ddd;
+    width: 100vw;
   }
-
+.login-form {
+    width: 70%;
+   
+  }
   .login-container h2 {
     font-size: 20px;
     margin-bottom: 16px;
@@ -72,10 +115,14 @@
 }
 
 @media (max-width: 768px) {
+    #root {
+    height: 100vh;
+    width: 100vw;
+  }
   .login-container {
-    max-width: 90%;
-    margin: 40px auto;
-    padding: 32px;
+   width: 100vw;
+    margin: 0px;
+    padding: 0px;
   }
 
   .login-container h2 {
