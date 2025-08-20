@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -45,6 +46,25 @@ router.post('/login', async (req, res) => {
     );
 
     res.json({ token, username: user.username });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Search for users
+router.get('/search', auth, async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ message: 'Query parameter is required' });
+  }
+
+  try {
+    const users = await User.find({
+      username: { $regex: query, $options: 'i' },
+    }).select('username');
+
+    res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
