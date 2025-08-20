@@ -5,6 +5,8 @@ const messageSchema = new mongoose.Schema({
   recipient: { type: String, required: true }, // Added recipient field
   content: String,
   timestamp: { type: Date, default: Date.now },
+  delivered: { type: Boolean, default: false },
+  seen: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('Message', messageSchema);

@@ -1,8 +1,7 @@
-
 const express = require('express');
 const Message = require('../models/Message');
 const auth = require('../middleware/auth');
-const { sendMessage } = require('../controllers/messageController');
+const { sendMessage, updateMessageStatus } = require('../controllers/messageController');
 const pusher = require('../config/pusher'); // Import Pusher configuration
 
 const router = express.Router();
@@ -18,6 +17,9 @@ const router = express.Router();
 
 // Send a message (with Pusher trigger)
 router.post('/', auth, sendMessage);
+
+// Update message status (delivered or seen)
+router.post('/status', auth, updateMessageStatus);
 
 // Get all messages involving the current user
 router.get('/', auth, async (req, res) => {

@@ -7,11 +7,24 @@ const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 
 const app = express();
+
+const allowedOrigins = [
+  'https://messaging-app-iota-three.vercel.app',
+  'http://localhost:3000', 
+];
+
 app.use(cors({
-origin: 'https://messaging-app-iota-three.vercel.app',
-credentials: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
-app.use(express.json());
+
+ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);

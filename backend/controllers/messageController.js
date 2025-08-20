@@ -23,3 +23,29 @@ exports.sendMessage = async (req, res) => {
 
   res.status(201).json(message);
 };
+
+exports.updateMessageStatus = async (req, res) => {
+  const { messageId, status } = req.body; // status can be 'delivered' or 'seen'
+
+  try {
+    const update = {};
+    if (status === 'delivered') update.delivered = true;
+    if (status === 'seen') update.seen = true;
+
+    const message = await Message.findByIdAndUpdate(messageId, update, { new: true });
+
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    // Trigger Pusher event
+    pusher.trigger('chat-room', `message-${status}`, {
+      messageId,
+      status,
+    });
+
+    res.json(message);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
