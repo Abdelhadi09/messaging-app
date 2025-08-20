@@ -9,8 +9,8 @@ const messageRoutes = require('./routes/messages');
 const app = express();
 app.use(cors({
 origin: 'https://messaging-app-iota-three.vercel.app'
+credentials: true,
 }));
-app.options('*', cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
