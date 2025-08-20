@@ -9,10 +9,13 @@ const Chat = ({ user }) => {
   const [content, setContent] = useState('');
   const [recipient, setRecipient] = useState('');
   const [typing, setTyping] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSidebar, setShowSidebar] = useState(false); // 👈 Sidebar toggle
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Fetch all users for conversation list
+  // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -27,7 +30,7 @@ const Chat = ({ user }) => {
     fetchUsers();
   }, [user.token, API_BASE_URL]);
 
-  // Fetch private messages with selected recipient
+  // Fetch messages
   useEffect(() => {
     const fetchMessages = async () => {
       if (!recipient) return;
@@ -43,7 +46,7 @@ const Chat = ({ user }) => {
     fetchMessages();
   }, [recipient, user.token, API_BASE_URL]);
 
-  // Subscribe to Pusher channel for real-time messaging
+  // Pusher setup
   useEffect(() => {
     const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
       cluster: process.env.REACT_APP_PUSHER_CLUSTER,
@@ -51,15 +54,13 @@ const Chat = ({ user }) => {
 
     const channel = pusher.subscribe('chat-room');
 
-    // Listen for typing events
     channel.bind('typing', (data) => {
       if (data.sender === recipient) {
         setTyping(true);
-        setTimeout(() => setTyping(false), 2000); // Remove typing indicator after 2 seconds
+        setTimeout(() => setTyping(false), 2000);
       }
     });
 
-    // Listen for new messages
     channel.bind('new-message', (data) => {
       if (data.sender === recipient || data.recipient === recipient) {
         setMessages((prevMessages) => [...prevMessages, data]);
@@ -72,7 +73,7 @@ const Chat = ({ user }) => {
     };
   }, [recipient]);
 
-  // Send a private message
+  // Send message
   const sendMessage = async (e) => {
     e.preventDefault();
     try {
@@ -84,11 +85,11 @@ const Chat = ({ user }) => {
       setMessages((prev) => [...prev, res.data]);
       setContent('');
     } catch (err) {
-      alert('Failed to send message.');
-      console.error(err);
+      console.error('Failed to send message:', err);
     }
   };
 
+  // Typing indicator
   const handleTyping = () => {
     axios.post(
       `${API_BASE_URL}/api/messages/typing`,
@@ -97,21 +98,79 @@ const Chat = ({ user }) => {
     );
   };
 
+  // Search users
+  const searchUsers = async (query) => {
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/auth/search`, {
+        params: { query },
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setSearchResults(res.data);
+    } catch (err) {
+      console.error('Error searching users:', err);
+    }
+  };
+
   return (
     <div className="chat-container">
-      <aside className="user-list">
+      {/* Hamburger for mobile */}
+      <button className="hamburger-btn" onClick={() => setShowSidebar(!showSidebar)}>
+        ☰
+      </button>
+
+      {/* Sidebar */}
+      <aside className={`user-list ${showSidebar ? 'visible' : ''}`}>
         <h3>Conversations</h3>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search for users..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              searchUsers(e.target.value);
+            }}
+            className="input-search"
+          />
+        </div>
+
+        <div className="search-results">
+          {searchResults.map((user, index) => (
+            <div
+              key={index}
+              className="search-result"
+              onClick={() => {
+                setRecipient(user.username);
+                setSearchQuery('');
+                setSearchResults([]);
+                setShowSidebar(false);
+              }}
+            >
+              {user.username}
+            </div>
+          ))}
+        </div>
+
         {users.map((username, index) => (
           <div
             key={index}
             className={`user ${username === recipient ? 'active' : ''}`}
-            onClick={() => setRecipient(username)}
+            onClick={() => {
+              setRecipient(username);
+              setShowSidebar(false);
+            }}
           >
             {username}
           </div>
         ))}
       </aside>
 
+      {/* Chat box */}
       <main className="chat-box">
         <h2>Chat with {recipient || '...'}</h2>
         <div className="messages">

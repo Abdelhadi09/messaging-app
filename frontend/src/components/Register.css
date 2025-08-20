@@ -1,0 +1,78 @@
+/* Register.css */
+
+.register-container {
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.register-container h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.register-container input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.register-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-container button:hover {
+  background-color: #218838;
+}
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .register-container {
+    margin: 20px;
+    padding: 24px;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .register-container h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .register-container input,
+  .register-container button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    max-width: 90%;
+    margin: 40px auto;
+    padding: 32px;
+  }
+
+  .register-container h2 {
+    font-size: 22px;
+  }
+
+  .register-container input,
+  .register-container button {
+    font-size: 15px;
+  }
+}

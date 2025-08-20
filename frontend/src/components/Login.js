@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './Login.css';
 
 const Login = ({ setUser }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  // Use environment variable for backend URL
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleLogin = async (e) => {
@@ -16,32 +20,45 @@ const Login = ({ setUser }) => {
         password,
       });
       setUser(response.data);
-      alert('Login successful!');
+      toast.success('Login successful!', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      setTimeout(() => navigate('/'), 3000);
     } catch (error) {
-      alert('Login failed!');
+      toast.error('Login failed. Please check your credentials.', {
+        position: 'top-right',
+        autoClose: 4000,
+      });
       console.error(error);
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <h2>Login</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div className="login-container">
+      <form onSubmit={handleLogin}>
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+        <p>
+          Don't have an account? <Link to="/register">Sign up</Link>
+        </p>
+      </form>
+      <ToastContainer />
+    </div>
   );
 };
 
