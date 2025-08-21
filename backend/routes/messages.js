@@ -1,5 +1,5 @@
 const express = require('express');
-const cloudinary = require('../config/cloudinary');
+const cloudinary = require('../config/Cloudinary');
 const Message = require('../models/Message');
 const auth = require('../middleware/auth');
 const { sendMessage, updateMessageStatus } = require('../controllers/messageController');

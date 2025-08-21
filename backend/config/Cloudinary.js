@@ -7,4 +7,3 @@ cloudinary.config({
     secure: true,
 });
 module.exports = cloudinary;
-console.log(cloudinary.config());
