@@ -4,7 +4,7 @@ import Pusher from 'pusher-js';
 import './Chat.css';
 import Sidebar from './Sidebar';
 import MessageList from './MessageList';
-import MessageForm from './MessageForm';
+import uploadIcon from '../images/image (2).png';
 
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
@@ -15,7 +15,7 @@ const Chat = ({ user }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false); // 👈 Sidebar toggle
-
+  const [file, setFile] = useState(null); // State for file upload
 
   const messagesEndRef = React.useRef(null);
 
@@ -111,6 +111,66 @@ const Chat = ({ user }) => {
     }
   };
 
+  // Handle file upload
+  const handleFileUpload = async (e) => {
+    e.preventDefault();
+    if (!file || !recipient) return;
+console.log('File selected:',file)
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('recipient', recipient);
+
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/messages/upload`, formData, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setMessages((prevMessages) => [...prevMessages, res.data.data]);
+      setFile(null); // Reset file input
+    } catch (err) {
+      console.error('Error uploading file:', err);
+    }
+  };
+
+  // Handle sending messages and file uploads
+  const handleSend = async (e) => {
+    e.preventDefault();
+    try {
+      if (content.trim()) {
+        // Send the message to /api/messages
+        const messageRes = await axios.post(
+          `${API_BASE_URL}/api/messages`,
+          { content, recipient },
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setMessages((prev) => [...prev, messageRes.data]);
+        setContent(''); // Reset message input
+      }
+
+      if (file) {
+        // Send the file to /upload
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('recipient', recipient);
+
+        const fileRes = await axios.post(`${API_BASE_URL}/api/messages/upload`, formData, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        setMessages((prevMessages) => [...prevMessages, fileRes.data.data]);
+        setFile(null); // Reset file input
+      }
+    } catch (err) {
+      console.error('Failed to send message or upload file:', err);
+    }
+  };
+
   // Typing indicator
   const handleTyping = () => {
     axios.post(
@@ -202,14 +262,30 @@ const Chat = ({ user }) => {
 
         {typing && <div className="typing-indicator">{recipient} is typing...</div>}
 
-        {recipient && (
-          <MessageForm
-            content={content}
-            setContent={setContent}
-            handleTyping={handleTyping}
-            sendMessage={sendMessage}
+
+        {/* Combined message and file upload form */}
+        <form onSubmit={handleSend} className='message-form'>
+          <input
+          className='input-message'
+            type="text"
+            value={content}
+            onChange={(e) =>{ 
+              setContent(e.target.value) ;
+               handleTyping()}}
+            placeholder="Type a message..."
           />
-        )}
+          <label htmlFor="file-upload" className="file-upload-label">
+        <img src={uploadIcon} alt="Upload" className="upload-icon" />
+      </label>
+      <input
+        id="file-upload"
+        type="file"
+        onChange={(e) => setFile(e.target.files[0])}
+        className="input-file"
+        style={{ display: 'none' }}
+      />
+          <button type="submit" className='send-button'>Send</button>
+        </form>
       </main>
     </div>
   );
