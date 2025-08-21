@@ -1,19 +1,14 @@
 const express = require('express');
+const cloudinary = require('../config/cloudinary');
 const Message = require('../models/Message');
 const auth = require('../middleware/auth');
 const { sendMessage, updateMessageStatus } = require('../controllers/messageController');
 const pusher = require('../config/pusher'); // Import Pusher configuration
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
+const fs = require('fs');
 
 const router = express.Router();
-
-// Initialize Pusher
-// const pusher = new Pusher({
-//   appId: 'PUSHER_APP_ID',
-//   key: 'PUSHE_KEY',
-//   secret: 'PUSHER_SECRET',
-//   cluster: 'PUSHER_CLUSTER',
-//   useTLS: true,
-// });
 
 // Send a message (with Pusher trigger)
 router.post('/', auth, sendMessage);
@@ -86,6 +81,50 @@ router.post('/typing', auth, async (req, res) => {
   } catch (error) {
     console.error('Pusher error:', error);
     res.status(500).json({ message: 'Failed to send typing event' });
+  }
+});
+
+// Upload a file and send a message
+router.post('/upload', auth, upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file; // Access the uploaded file
+    const { recipient } = req.body;
+
+    if (!file) {
+      return res.status(400).json({ message: 'File is required' });
+    }
+
+    // Upload file to Cloudinary
+    const result = await cloudinary.uploader.upload(file.path, {
+      resource_type: 'auto',
+      folder: 'messaging-app',
+      use_filename: true,
+      unique_filename: true,
+      timeout: 60000, // 1 minute timeout
+    });
+
+    // Create a new message with file metadata
+    const message = new Message({
+      sender: req.user.username,
+      recipient,
+      fileUrl: result.secure_url,
+      fileType: result.resource_type,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours expiration
+    });
+
+    await message.save();
+
+    // Delete the file from the uploads folder after Cloudinary processing
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.error('Failed to delete file:', err);
+      }
+    });
+
+    res.status(201).json({ message: 'File uploaded and message sent.', data: message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to upload file and send message.' });
   }
 });
 
