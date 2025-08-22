@@ -3,7 +3,7 @@ const cloudinary = require('../config/Cloudinary');
 const Message = require('../models/Message');
 const auth = require('../middleware/auth');
 const { sendMessage, updateMessageStatus } = require('../controllers/messageController');
-const pusher = require('../config/pusher'); // Import Pusher configuration
+const pusher = require('../config/pusher');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
 const fs = require('fs');
@@ -87,7 +87,7 @@ router.post('/typing', auth, async (req, res) => {
 // Upload a file and send a message
 router.post('/upload', auth, upload.single('file'), async (req, res) => {
   try {
-    const file = req.file; // Access the uploaded file
+    const file = req.file;
     const { recipient } = req.body;
 
     if (!file) {
@@ -100,7 +100,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
       folder: 'messaging-app',
       use_filename: true,
       unique_filename: true,
-      timeout: 60000, // 1 minute timeout
+      timeout: 60000,
     });
 
     // Create a new message with file metadata
@@ -109,7 +109,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
       recipient,
       fileUrl: result.secure_url,
       fileType: result.resource_type,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours expiration
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), 
     });
 
     await message.save();
