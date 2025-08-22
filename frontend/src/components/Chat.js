@@ -14,8 +14,8 @@ const Chat = ({ user }) => {
   const [typing, setTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [showSidebar, setShowSidebar] = useState(false); // 👈 Sidebar toggle
-  const [file, setFile] = useState(null); // State for file upload
+  const [showSidebar, setShowSidebar] = useState(false); 
+  const [file, setFile] = useState(null);
 
   const messagesEndRef = React.useRef(null);
 
@@ -232,12 +232,12 @@ console.log('File selected:',file)
 
   return (
     <div className="chat-container">
-      {/* Hamburger for mobile */}
+    
       <button className="hamburger-btn" onClick={() => setShowSidebar(!showSidebar)}>
         ☰
       </button>
 
-      {/* Sidebar */}
+   
       <Sidebar
         users={users}
         recipient={recipient}
@@ -250,7 +250,7 @@ console.log('File selected:',file)
         searchUsers={searchUsers}
       />
 
-      {/* Chat box */}
+    
       <main className="chat-box">
         <h2>Chat with {recipient || '...'}</h2>
         <MessageList
@@ -263,7 +263,7 @@ console.log('File selected:',file)
         {typing && <div className="typing-indicator">{recipient} is typing...</div>}
 
 
-        {/* Combined message and file upload form */}
+       
         <form onSubmit={handleSend} className='message-form'>
           <input
           className='input-message'
