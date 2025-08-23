@@ -2,6 +2,10 @@
 
 A real-time messaging application that allows users to send text messages and files, with features like file expiration and real-time updates using Pusher.
 
+## Live Demo
+
+Check out the live version of the app here: [Messaging App on Vercel](https://messaging-app-iota-three.vercel.app)
+
 ## Features
 
 - **User Authentication**: Secure login and registration system.
