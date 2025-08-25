@@ -44,6 +44,7 @@ const Chat = ({ user }) => {
         const res = await axios.get(`${API_BASE_URL}/api/messages/private/${recipient}`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
+        console.log('Fetched messages:', res.data);
         setMessages(res.data);
       } catch (err) {
         console.error('Error fetching messages:', err);
