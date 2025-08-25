@@ -89,6 +89,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
   try {
     const file = req.file;
     const { recipient } = req.body;
+    const originalName = file.originalname;
 
     if (!file) {
       return res.status(400).json({ message: 'File is required' });
@@ -98,8 +99,10 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
     const result = await cloudinary.uploader.upload(file.path, {
       resource_type: 'auto',
       folder: 'messaging-app',
-      use_filename: true,
-      unique_filename: true,
+      public_id : originalName,
+      use_filename: false,
+      unique_filename: false,
+      access_mode: 'public', // Ensure the file is publicly accessible
       timeout: 60000,
     });
 
@@ -109,7 +112,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
       recipient,
       fileUrl: result.secure_url,
       fileType: result.resource_type,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), 
+      expiresAt: new Date(Date.now() +  60 * 1000), 
     });
 
     await message.save();
