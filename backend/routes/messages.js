@@ -104,6 +104,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
       unique_filename: false,
       access_mode: 'public', // Ensure the file is publicly accessible
       timeout: 60000,
+      overwrite: true,
     });
 
     // Create a new message with file metadata
