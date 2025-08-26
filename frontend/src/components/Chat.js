@@ -6,6 +6,7 @@ import Sidebar from './Sidebar';
 import MessageList from './MessageList';
 import uploadIcon from '../images/image (2).png';
 
+
 const Chat = ({ user }) => {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -262,7 +263,7 @@ console.log('File selected:',file)
         />
 
         {typing && <div className="typing-indicator">{recipient} is typing...</div>}
-
+  
 
        
         <form onSubmit={handleSend} className='message-form'>
