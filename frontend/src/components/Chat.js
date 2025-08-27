@@ -97,46 +97,6 @@ const Chat = ({ user }) => {
     };
   }, [recipient]);
 
-  // Send message
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(
-        `${API_BASE_URL}/api/messages`,
-        { content, recipient },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      setMessages((prev) => [...prev, res.data]);
-      setContent('');
-    } catch (err) {
-      console.error('Failed to send message:', err);
-    }
-  };
-
-  // Handle file upload
-  const handleFileUpload = async (e) => {
-    e.preventDefault();
-    if (!file || !recipient) return;
-console.log('File selected:',file)
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('recipient', recipient);
-
-    try {
-      const res = await axios.post(`${API_BASE_URL}/api/messages/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setMessages((prevMessages) => [...prevMessages, res.data.data]);
-      setFile(null); // Reset file input
-    } catch (err) {
-      console.error('Error uploading file:', err);
-    }
-  };
-
   // Handle sending messages and file uploads
   const handleSend = async (e) => {
     e.preventDefault();
