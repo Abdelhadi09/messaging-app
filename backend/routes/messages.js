@@ -1,6 +1,7 @@
 const express = require('express');
 const cloudinary = require('../config/Cloudinary');
 const Message = require('../models/Message');
+const User = require('../models/User'); // Import User model
 const auth = require('../middleware/auth');
 const { sendMessage, updateMessageStatus } = require('../controllers/messageController');
 const pusher = require('../config/pusher');
@@ -50,20 +51,29 @@ router.get('/private/:username', auth, async (req, res) => {
 router.get('/users', auth, async (req, res) => {
   const currentUser = req.user.username;
 
-  const messages = await Message.find({
-    $or: [
-      { sender: currentUser },
-      { recipient: currentUser },
-    ],
-  });
+  try {
+    const messages = await Message.find({
+      $or: [
+        { sender: currentUser },
+        { recipient: currentUser },
+      ],
+    });
 
-  const users = new Set();
-  messages.forEach((msg) => {
-    if (msg.sender !== currentUser) users.add(msg.sender);
-    if (msg.recipient !== currentUser) users.add(msg.recipient);
-  });
+    const usernames = new Set();
+    messages.forEach((msg) => {
+      if (msg.sender !== currentUser) usernames.add(msg.sender);
+      if (msg.recipient !== currentUser) usernames.add(msg.recipient);
+    });
 
-  res.json(Array.from(users));
+    // Fetch user details from the User model
+    const users = await User.find({ username: { $in: Array.from(usernames) } })
+      .select('username profilePic ');
+
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
 });
 
 // Handle typing indicator
