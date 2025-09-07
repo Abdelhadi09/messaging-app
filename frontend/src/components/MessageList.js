@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './MessageList.css';
 
 const MessageList = ({ messages, user, handleSeen, messagesEndRef }) => {
   const [previewImage, setPreviewImage] = useState(null); // State for image preview

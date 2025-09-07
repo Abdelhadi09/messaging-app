@@ -1,6 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Sidebar.css';
 
 const Sidebar = ({
+  navigate,
+  user,
   users,
   recipient,
   setRecipient,
@@ -14,7 +18,13 @@ const Sidebar = ({
 }) => {
   return (
     <aside className={`user-list ${showSidebar ? 'visible' : ''}`}>
-      <h3>Conversations</h3>
+      <div className="sidebar-header"  onClick={() => navigate("/profile")}>
+       < img 
+       src={user?.profilePic || 'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'} alt="Profile" className="profile-pic-small" />
+
+        <h3>{user.username}</h3>
+        </div>
+      
       <div className="search-bar">
         <input
           type="text"
@@ -27,7 +37,7 @@ const Sidebar = ({
           className="input-search"
         />
       </div>
-
+<p>Chats</p>
       <div className="search-results">
         {searchResults.map((user, index) => (
           <div
@@ -44,16 +54,21 @@ const Sidebar = ({
         ))}
       </div>
 
-      {users.map((username, index) => (
+      {users.map((user, index) => (
         <div
           key={index}
-          className={`user ${username === recipient ? 'active' : ''}`}
+          className={`user ${user.username === recipient ? 'active' : ''}`}
           onClick={() => {
-            setRecipient(username);
+            setRecipient(user.username);
             setShowSidebar(false);
           }}
         >
-          {username}
+          <img
+            src={user.profilePic || 'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'}
+            alt="Profile"
+            className="profile-pic-small"
+          />
+          <span>{user.username}</span>
         </div>
       ))}
     </aside>

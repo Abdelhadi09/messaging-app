@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Pusher from 'pusher-js';
+import { useNavigate } from 'react-router-dom';
 import './Chat.css';
 import Sidebar from './Sidebar';
 import MessageList from './MessageList';
 import uploadIcon from '../images/image (2).png';
+import Profile from './Profile';
 
 
 const Chat = ({ user }) => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState('');
@@ -194,13 +197,15 @@ const Chat = ({ user }) => {
 
   return (
     <div className="chat-container">
-    
+
       <button className="hamburger-btn" onClick={() => setShowSidebar(!showSidebar)}>
         ☰
       </button>
 
    
       <Sidebar
+      navigate={navigate}
+      user = {user}
         users={users}
         recipient={recipient}
         setRecipient={setRecipient}

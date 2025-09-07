@@ -1,0 +1,72 @@
+/* Sidebar */
+.user-list {
+  width: 280px;
+  padding: 20px;
+  background-color: #fef5fb;
+  border-right: 1px solid #ddd;
+}
+
+.user-list h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #333;
+}
+
+.search-bar input {
+  font-family: "Sour Gummy", sans-serif;
+  width: 80%;
+  padding: 10px;
+  margin-bottom: 0px;
+  border: 1px solid rgba(165, 42, 42, 0.692);
+  border-radius: 6px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-left: 3px;
+}
+.profile-pic-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  /* border: 2px solid #ff75cf; */
+
+}
+.sidebar-header:hover {
+  cursor: pointer;
+  padding-left: 3px;
+  background-color: #fcceec;
+  color: white;
+  padding: 0px;
+  border-radius: 16px;
+  transition: background-color 0.3s ease-in-out;
+}
+.search-result,
+.user {
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: #fcceec;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #fff;
+}
+
+.search-result:hover,
+.user:hover {
+  background-color: #ff75cf;
+}
+
+.user.active {
+  background-color: #ff75cf;
+  color: white;
+}
+.user{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
