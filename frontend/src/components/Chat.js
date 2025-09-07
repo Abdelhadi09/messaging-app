@@ -9,7 +9,7 @@ import uploadIcon from '../images/image (2).png';
 import Profile from './Profile';
 
 
-const Chat = ({ user }) => {
+const Chat = ({ user , setUser }) => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -215,6 +215,7 @@ const Chat = ({ user }) => {
         setSearchQuery={setSearchQuery}
         searchResults={searchResults}
         searchUsers={searchUsers}
+        setUser={setUser}
       />
 
     

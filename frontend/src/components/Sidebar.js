@@ -4,7 +4,6 @@ import './Sidebar.css';
 import Profile from './Profile';
 
 const Sidebar = ({
-  navigate,
   user,
   users,
   recipient,
@@ -15,7 +14,7 @@ const Sidebar = ({
   setSearchQuery,
   searchResults,
   searchUsers,
-  onlineUsers,
+  setUser ,
 }) => {
   const [showProfile, setShowProfile] = React.useState(false);
 
@@ -26,7 +25,7 @@ const Sidebar = ({
           <button className="exit-btn" onClick={() => setShowProfile(false)}>
             &larr; 
           </button>
-          <Profile user={user} />
+          <Profile user={user} setUser={setUser} />
         </div>
       ) : (
         <>

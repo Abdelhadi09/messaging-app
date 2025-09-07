@@ -14,14 +14,10 @@ const App = () => {
       <Routes>
         <Route
           path="/"
-          element={!user ? <Navigate to="/login" /> : <Chat user={user} />}
+          element={!user ? <Navigate to="/login" /> : <Chat user={user} setUser={setUser} />}
         />
         <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/register" element={<Register setUser={setUser} />} />
-<Route
-          path="/profile"
-          element={!user ? <Navigate to="/login" /> : <Profile user={user} setUser={setUser} />}
-        />      
+        <Route path="/register" element={<Register setUser={setUser} />} />     
       </Routes>
     </Router>
   );
