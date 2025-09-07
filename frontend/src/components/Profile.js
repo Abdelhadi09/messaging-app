@@ -78,7 +78,7 @@ const Profile = ({ user, setUser }) => {
         />
       </div>
 
-      <p>{bio}</p>
+      <p className='bio'>{bio}</p>
 
       <button type="button" onClick={() => setIsModalOpen(true)}>
         Change Info
@@ -89,11 +89,16 @@ const Profile = ({ user, setUser }) => {
           <div className="modal-content">
             <h3>Edit Profile</h3>
             <form onSubmit={handleUpdate} className="profile-form">
+              <div className='file-input-container'>
+              <label>Profile Picture:  </label>
               <input
+              className='file-input'
                 type="file"
                 onChange={(e) => setFile(e.target.files[0])}
               />
-              <textarea
+              </div>
+              <input 
+              className='bio-input'
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Write something about yourself..."
