@@ -122,4 +122,19 @@ router.get('/profile', auth, async (req, res) => {
   }
 });
 
+// Fetch recipient details
+router.get('/users/:username', async (req, res) => {
+  try {
+    console.log('Fetching user with username:', req.params.username); // Debug log
+    const user = await User.findOne({ username: req.params.username }).select('username profilePic bio');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error('Error fetching user details:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
