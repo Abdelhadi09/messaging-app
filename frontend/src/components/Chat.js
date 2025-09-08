@@ -20,6 +20,7 @@ const Chat = ({ user , setUser }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false); 
   const [file, setFile] = useState(null);
+  const [recipientDetails, setRecipientDetails] = useState({ username: '', profilePic: '' });
 
   const messagesEndRef = React.useRef(null);
 
@@ -195,6 +196,27 @@ const Chat = ({ user , setUser }) => {
     }
   }, [messages]);
 
+  // Fetch recipient details when the recipient changes
+  useEffect(() => {
+    const fetchRecipientDetails = async () => {
+      if (!recipient) return;
+
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/auth/users/${recipient}`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        setRecipientDetails({
+          username: res.data.username,
+          profilePic: res.data.profilePic || 'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg',
+        });
+      } catch (err) {
+        console.error('Error fetching recipient details:', err);
+      }
+    };
+
+    fetchRecipientDetails();
+  }, [recipient, user.token, API_BASE_URL]);
+
   return (
     <div className="chat-container">
 
@@ -220,7 +242,17 @@ const Chat = ({ user , setUser }) => {
 
     
       <main className="chat-box">
-        <h2>Chat with {recipient || '...'}</h2>
+        <div className="chat-header">
+          {recipientDetails.profilePic  && (
+            <img
+              src={recipientDetails.profilePic }
+              alt={`${recipientDetails.username}'s profile`}
+              className="recipient-profile-pic"
+            />
+          )}
+          <h2>{recipientDetails.username || '...'}</h2>
+        </div>
+
         <MessageList
           messages={messages}
           user={user}
@@ -228,7 +260,7 @@ const Chat = ({ user , setUser }) => {
           messagesEndRef={messagesEndRef}
         />
 
-        {typing && <div className="typing-indicator">{recipient} is typing...</div>}
+        {typing && <div className="typing-indicator">{recipientDetails.username} is typing...</div>}
   
 
        
