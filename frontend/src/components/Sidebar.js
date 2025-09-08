@@ -14,7 +14,7 @@ const Sidebar = ({
   setSearchQuery,
   searchResults,
   searchUsers,
-  setUser ,
+  setUser,
 }) => {
   const [showProfile, setShowProfile] = React.useState(false);
 

@@ -27,6 +27,8 @@ const Chat = ({ user , setUser }) => {
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+
+
   // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
@@ -221,76 +223,70 @@ const Chat = ({ user , setUser }) => {
 
   return (
     <div className="chat-container">
-
-      <button className="hamburger-btn" onClick={() => setShowSidebar(!showSidebar)}>
-        ☰
-      </button>
-
-   
-      <Sidebar
-      navigate={navigate}
-      user = {user}
-        users={users}
-        recipient={recipient}
-        setRecipient={setRecipient}
-        showSidebar={showSidebar}
-        setShowSidebar={setShowSidebar}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searchResults={searchResults}
-        searchUsers={searchUsers}
-        setUser={setUser}
-      />
-   
- 
-    
-      <main className="chat-box">
-        <div className="chat-header" onClick={() => setShowRecipientProfile(true)}>
-          {recipientDetails.profilePic  && (
-            <img
-              src={recipientDetails.profilePic }
-              alt={`${recipientDetails.username}'s profile`}
-              className="recipient-profile-pic"
-            />
-          )}
-          <h2>{recipientDetails.username || '...'}</h2>
-        </div>
-       
-
-        <MessageList
-          messages={messages}
-          user={user}
-          handleSeen={handleSeen}
-          messagesEndRef={messagesEndRef}
-        />
-
-        {typing && <div className="typing-indicator">{recipientDetails.username} is typing...</div>}
-  
-
-       
-        <form onSubmit={handleSend} className='message-form'>
-          <input
-          className='input-message'
-            type="text"
-            value={content}
-            onChange={(e) =>{ 
-              setContent(e.target.value) ;
-               handleTyping()}}
-            placeholder="Type a message..."
+          <Sidebar
+            navigate={navigate}
+            user={user}
+            users={users}
+            recipient={recipient}
+            setRecipient={setRecipient}
+            showSidebar={showSidebar}
+            setShowSidebar={setShowSidebar}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searchResults={searchResults}
+            searchUsers={searchUsers}
+            setUser={setUser}
           />
-          <label htmlFor="file-upload" className="file-upload-label">
-        <img src={uploadIcon} alt="Upload" className="upload-icon" />
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-        className="input-file"
-        style={{ display: 'none' }}
-      />
-          <button type="submit" className='send-button'>Send</button>
-        </form>
-      </main>
+
+          <main className="chat-box">
+            <div className="profile-section">
+              <button onClick={() => setShowSidebar(!showSidebar)} className="toggle-sidebar-btn">&larr;</button>  
+             <div className="profile-section" onClick={() => setShowRecipientProfile(true)}>
+              <img
+                src={
+                  recipientDetails.profilePic ||
+                  'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'
+                }
+                alt="Profile"
+                className="profile-pic-small"
+              />
+              <h2>{recipientDetails.username || '...'}</h2>
+              </div>
+            </div>
+            <MessageList
+              messages={messages}
+              user={user}
+              handleSeen={handleSeen}
+              messagesEndRef={messagesEndRef}
+            />
+
+            {typing && <div className="typing-indicator">{recipientDetails.username} is typing...</div>}
+    
+
+           
+            <form onSubmit={handleSend} className='message-form'>
+              <input
+              className='input-message'
+                type="text"
+                value={content}
+                onChange={(e) =>{ 
+                  setContent(e.target.value) ;
+                   handleTyping()}}
+                placeholder="Type a message..."
+              />
+              <label htmlFor="file-upload" className="file-upload-label">
+            <img src={uploadIcon} alt="Upload" className="upload-icon" />
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            onChange={(e) => setFile(e.target.files[0])}
+            className="input-file"
+            style={{ display: 'none' }}
+          />
+              <button type="submit" className='send-button'>Send</button>
+            </form>
+          </main>
       {showRecipientProfile && (
           <RecipientProfile
             recipient={recipientDetails}
