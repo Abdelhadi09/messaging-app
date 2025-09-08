@@ -46,6 +46,7 @@ const Sidebar = ({
           </div>
 
           <div className="search-bar">
+              <p>Chats</p>
             <input
               type="text"
               placeholder="Search for users..."
@@ -56,8 +57,9 @@ const Sidebar = ({
               }}
               className="input-search"
             />
+
           </div>
-          <p>Chats</p>
+        
           <div className="search-results">
             {searchResults.map((user, index) => (
               <div
