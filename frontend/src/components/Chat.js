@@ -7,7 +7,7 @@ import Sidebar from './Sidebar';
 import MessageList from './MessageList';
 import uploadIcon from '../images/image (2).png';
 import Profile from './Profile';
-
+import RecipientProfile from './RecipientProfile';
 
 const Chat = ({ user , setUser }) => {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ const Chat = ({ user , setUser }) => {
   const [showSidebar, setShowSidebar] = useState(false); 
   const [file, setFile] = useState(null);
   const [recipientDetails, setRecipientDetails] = useState({ username: '', profilePic: '' });
+  const [showRecipientProfile, setShowRecipientProfile] = useState(false);
 
   const messagesEndRef = React.useRef(null);
 
@@ -208,6 +209,7 @@ const Chat = ({ user , setUser }) => {
         setRecipientDetails({
           username: res.data.username,
           profilePic: res.data.profilePic || 'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg',
+          bio: res.data.bio || 'No bio available',
         });
       } catch (err) {
         console.error('Error fetching recipient details:', err);
@@ -239,10 +241,11 @@ const Chat = ({ user , setUser }) => {
         searchUsers={searchUsers}
         setUser={setUser}
       />
-
+   
+ 
     
       <main className="chat-box">
-        <div className="chat-header">
+        <div className="chat-header" onClick={() => setShowRecipientProfile(true)}>
           {recipientDetails.profilePic  && (
             <img
               src={recipientDetails.profilePic }
@@ -252,6 +255,7 @@ const Chat = ({ user , setUser }) => {
           )}
           <h2>{recipientDetails.username || '...'}</h2>
         </div>
+       
 
         <MessageList
           messages={messages}
@@ -287,6 +291,12 @@ const Chat = ({ user , setUser }) => {
           <button type="submit" className='send-button'>Send</button>
         </form>
       </main>
+      {showRecipientProfile && (
+          <RecipientProfile
+            recipient={recipientDetails}
+            onClose={() => setShowRecipientProfile(false)}
+          />
+        )}
     </div>
   );
 };
