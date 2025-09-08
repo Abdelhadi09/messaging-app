@@ -18,7 +18,7 @@ const Chat = ({ user , setUser }) => {
   const [typing, setTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [showSidebar, setShowSidebar] = useState(false); 
+  const [showSidebar, setShowSidebar] = useState(window.innerWidth <= 768); // Default to true for mobile
   const [file, setFile] = useState(null);
   const [recipientDetails, setRecipientDetails] = useState({ username: '', profilePic: '' });
   const [showRecipientProfile, setShowRecipientProfile] = useState(false);
@@ -220,6 +220,20 @@ const Chat = ({ user , setUser }) => {
 
     fetchRecipientDetails();
   }, [recipient, user.token, API_BASE_URL]);
+
+  // Adjust sidebar visibility on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setShowSidebar(false); // Hide sidebar for desktop
+      } else {
+        setShowSidebar(true); // Show sidebar for mobile
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="chat-container">
