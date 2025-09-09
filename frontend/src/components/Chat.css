@@ -214,6 +214,9 @@ font-size: 1.5rem ;
   background-color: #ffe2f8;
   padding: 10px;
 }
+.search-result{
+  width: 85%;
+}
 }
 .chat-header {
   display: flex;

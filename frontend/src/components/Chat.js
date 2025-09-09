@@ -234,7 +234,7 @@ const Chat = ({ user , setUser }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
+console.log (user.token);
   return (
     <div className="chat-container">
           <Sidebar
