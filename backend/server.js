@@ -6,6 +6,7 @@ const cloudinary = require('cloudinary').v2;
 
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
+const onlineUsersRoutes = require('./routes/onlineUsers'); // Import online users routes
 const Message = require('./models/Message');
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/online-users', onlineUsersRoutes); // Add route for online users
 
 // Periodic cleanup of expired messages
 setInterval(async () => {
