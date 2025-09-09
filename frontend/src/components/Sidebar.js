@@ -19,27 +19,8 @@ const Sidebar = ({
 }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState([]); // State for online users
+  const [lastMessages, setLastMessages] = useState({});
 
-  // useEffect(() => {
-  //   const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY, {
-  //     cluster: process.env.REACT_APP_PUSHER_CLUSTER,
-  //   });
-
-  //   const channel = pusher.subscribe('presence-channel');
-
-  //   channel.bind('user-online', (data) => {
-  //     setOnlineUsers((prev) => [...prev, data.username]);
-  //   });
-
-  //   channel.bind('user-offline', (data) => {
-  //     setOnlineUsers((prev) => prev.filter((username) => username !== data.username));
-  //   });
-
-  //   return () => {
-  //     channel.unbind_all();
-  //     channel.unsubscribe();
-  //   };
-  // }, []);
 
   const getOnlineUsers = async () => {
     try {
@@ -89,7 +70,26 @@ const Sidebar = ({
       window.removeEventListener('beforeunload', turnOffline);
     };
   }, [user]);
-console.log (onlineUsers)
+
+  useEffect(() => {
+    const fetchLastMessages = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages/last`, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        const data = await response.json();
+        console.log('Last messages data:', data);
+        setLastMessages(data);
+      } catch (err) {
+        console.error('Error fetching last messages:', err);
+      }
+    };
+
+    if (user) {
+      fetchLastMessages();
+    }
+  }, [user]);
+
   return (
     <aside className={`user-list ${showSidebar ? 'visible' : ''}`}>
       {showProfile ? (
@@ -101,22 +101,8 @@ console.log (onlineUsers)
         </div>
       ) : (
         <>
-          <div
-            className="sidebar-header"
-            onClick={() => setShowProfile(true)}
-          >
-            <img
-              src={
-                user?.profilePic ||
-                'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'
-              }
-              alt="Profile"
-              className="profile-pic-small"
-            />
-
-            <h3>{user.username}</h3>
-          </div>
-
+         
+<div>
           <div className="search-bar">
               <p>Chats</p>
             <input
@@ -167,19 +153,46 @@ console.log (onlineUsers)
                 alt="Profile"
                 className="profile-pic-small"
               />
+              <div className="user-info">
               <span>{user.username}</span>
+             <p className="last-message">
+  {lastMessages[user.username]?.content
+    ? lastMessages[user.username].content
+    : lastMessages[user.username]?.fileType
+      ? `sent you a ${lastMessages[user.username].fileType}`
+      : ''}
+</p></div>
               {onlineUsers.includes(user.username) && (
-                <span className="online-indicator" style={{
-                  display: 'inline-block',
-                  width: '10px',
-                  height: '10px',
-                  backgroundColor: '#4cd964',
-                  borderRadius: '50%',
-                  marginLeft: '60%'
-                }}></span> // Green dot for online indicator
+                <span
+                  className="online-indicator"
+                  style={{
+                    display: 'inline-block',
+                    width: '10px',
+                    height: '10px',
+                    backgroundColor: '#4cd964',
+                    borderRadius: '50%',
+                    marginLeft: '60%',
+                  }}
+                ></span>
               )}
             </div>
           ))}
+          </div>
+           <div
+            className="sidebar-header"
+            onClick={() => setShowProfile(true)}
+          >
+            <img
+              src={
+                user?.profilePic ||
+                'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'
+              }
+              alt="Profile"
+              className="profile-pic-small"
+            />
+
+            <h3>{user.username}</h3>
+          </div>
         </>
       )}
     </aside>

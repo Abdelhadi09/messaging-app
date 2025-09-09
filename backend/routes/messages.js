@@ -142,4 +142,44 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
   }
 });
 
+// Fetch the last message received from each user
+router.get('/last', auth, async (req, res) => {
+  try {
+    const currentUser = req.user.username;
+
+    const lastMessages = await Message.aggregate([
+      {
+        $match: {
+          recipient: currentUser,
+        },
+      },
+      {
+        $sort: { timestamp: -1 },
+      },
+      {
+        $group: {
+          _id: '$sender',
+          content: { $first: '$content' },
+          timestamp: { $first: '$timestamp' },
+          fileType: { $first: '$fileType' },
+        },
+      },
+    ]);
+
+    const formattedMessages = lastMessages.reduce((acc, msg) => {
+      acc[msg._id] = {
+        content: msg.content,
+        timestamp: msg.timestamp,
+        fileType: msg.fileType,
+      };
+      return acc;
+    }, {});
+
+    res.json(formattedMessages);
+  } catch (err) {
+    console.error('Error fetching last messages:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

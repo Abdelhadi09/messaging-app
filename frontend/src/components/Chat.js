@@ -52,7 +52,6 @@ const Chat = ({ user , setUser }) => {
         const res = await axios.get(`${API_BASE_URL}/api/messages/private/${recipient}`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
-        console.log('Fetched messages:', res.data);
         setMessages(res.data);
       } catch (err) {
         console.error('Error fetching messages:', err);
@@ -234,7 +233,6 @@ const Chat = ({ user , setUser }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-console.log (user.token);
   return (
     <div className="chat-container">
           <Sidebar
