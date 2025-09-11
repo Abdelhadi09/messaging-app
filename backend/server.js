@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
+const http = require('http');
+const { Server } = require('socket.io');
 
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
@@ -64,5 +66,45 @@ setInterval(async () => {
 },24*60* 60 * 1000);
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => app.listen(process.env.PORT, () => console.log('Server running')))
+  .then(() => {
+    // Create HTTP server and Socket.IO instance
+    const server = http.createServer(app);
+    const io = new Server(server, {
+      cors: {
+        origin: allowedOrigins,
+        credentials: true,
+      },
+    });
+
+    // WebRTC signaling logic
+    io.on('connection', (socket) => {
+      console.log('A user connected:', socket.id);
+
+      socket.on('join-room', (roomId) => {
+        socket.join(roomId);
+        console.log(`User ${socket.id} joined room ${roomId}`);
+      });
+
+      socket.on('offer', ({ roomId, offer }) => {
+        console.log(`Offer received for room ${roomId}:`, offer);
+        socket.to(roomId).emit('offer', { offer });
+      });
+
+      socket.on('answer', ({ roomId, answer }) => {
+        console.log(`Answer received for room ${roomId}:`, answer);
+        socket.to(roomId).emit('answer', { answer });
+      });
+
+      socket.on('ice-candidate', ({ roomId, candidate }) => {
+        console.log(`ICE candidate received for room ${roomId}:`, candidate);
+        socket.to(roomId).emit('ice-candidate', { candidate });
+      });
+
+      socket.on('disconnect', () => {
+        console.log('A user disconnected:', socket.id);
+      });
+    });
+
+    server.listen(process.env.PORT, () => console.log('Server running on port', process.env.PORT));
+  })
   .catch(err => console.error(err));
