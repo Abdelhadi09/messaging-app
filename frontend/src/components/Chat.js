@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Pusher from 'pusher-js';
 import { useNavigate } from 'react-router-dom';
 import './Chat.css';
+
 import Sidebar from './Sidebar';
 import MessageList from './MessageList';
 import uploadIcon from '../images/image (2).png';
 import Profile from './Profile';
 import RecipientProfile from './RecipientProfile';
+import Call from './Call';
+import useVoiceCall from '../hook/useVoiceCall'; 
 
-const Chat = ({ user , setUser }) => {
+const Chat = ({ user, setUser }) => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -18,15 +21,28 @@ const Chat = ({ user , setUser }) => {
   const [typing, setTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [showSidebar, setShowSidebar] = useState(window.innerWidth <= 768); // Default to true for mobile
+  const [showSidebar, setShowSidebar] = useState(window.innerWidth <= 768);
   const [file, setFile] = useState(null);
   const [recipientDetails, setRecipientDetails] = useState({ username: '', profilePic: '' });
   const [showRecipientProfile, setShowRecipientProfile] = useState(false);
+  const [showCallComponent, setShowCallComponent] = useState(false);
 
-  const messagesEndRef = React.useRef(null);
+  const messagesEndRef = useRef(null);
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+const {
+  startCall,
+  endCall,
+  acceptCall,
+  denyCall,
+  isCalling,
+  isInCall,
+  incomingCall,
+  callerInfo,
+  localStreamRef,
+  remoteStreamRef,
+} = useVoiceCall({ user, recipient });
 
 
   // Fetch users
@@ -108,18 +124,16 @@ const Chat = ({ user , setUser }) => {
     e.preventDefault();
     try {
       if (content.trim()) {
-        // Send the message to /api/messages
         const messageRes = await axios.post(
           `${API_BASE_URL}/api/messages`,
           { content, recipient },
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         setMessages((prev) => [...prev, messageRes.data]);
-        setContent(''); // Reset message input
+        setContent('');
       }
 
       if (file) {
-        // Send the file to /upload
         const formData = new FormData();
         formData.append('file', file);
         formData.append('recipient', recipient);
@@ -132,14 +146,13 @@ const Chat = ({ user , setUser }) => {
         });
 
         setMessages((prevMessages) => [...prevMessages, fileRes.data.data]);
-        setFile(null); // Reset file input
+        setFile(null);
       }
     } catch (err) {
       console.error('Failed to send message or upload file:', err);
     }
   };
 
-  // Typing indicator
   const handleTyping = () => {
     axios.post(
       `${API_BASE_URL}/api/messages/typing`,
@@ -150,10 +163,7 @@ const Chat = ({ user , setUser }) => {
 
   // Search users
   const searchUsers = async (query) => {
-    if (!query) {
-      setSearchResults([]);
-      return;
-    }
+    if (!query) return setSearchResults([]);
 
     try {
       const res = await axios.get(`${API_BASE_URL}/api/auth/search`, {
@@ -166,7 +176,14 @@ const Chat = ({ user , setUser }) => {
     }
   };
 
-  // Update message status (delivered or seen)
+  // Scroll to latest message
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  // Message delivery status
   const updateMessageStatus = async (messageId, status) => {
     try {
       await axios.post(
@@ -188,17 +205,9 @@ const Chat = ({ user , setUser }) => {
     }
   }, [messages]);
 
-  const handleSeen = (messageId) => {
-    updateMessageStatus(messageId, 'seen');
-  };
+  const handleSeen = (messageId) => updateMessageStatus(messageId, 'seen');
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  // Fetch recipient details when the recipient changes
+  // Fetch recipient details
   useEffect(() => {
     const fetchRecipientDetails = async () => {
       if (!recipient) return;
@@ -207,9 +216,12 @@ const Chat = ({ user , setUser }) => {
         const res = await axios.get(`${API_BASE_URL}/api/auth/users/${recipient}`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
+
         setRecipientDetails({
           username: res.data.username,
-          profilePic: res.data.profilePic || 'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg',
+          profilePic:
+            res.data.profilePic ||
+            'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg',
           bio: res.data.bio || 'No bio available',
         });
       } catch (err) {
@@ -218,75 +230,77 @@ const Chat = ({ user , setUser }) => {
     };
 
     fetchRecipientDetails();
-  }, [recipient, user.token, API_BASE_URL]);
+  }, [recipient, user.token]);
 
-  // Adjust sidebar visibility on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setShowSidebar(false); // Hide sidebar for desktop
-      } else {
-        setShowSidebar(true); // Show sidebar for mobile
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
   return (
     <div className="chat-container">
-          <Sidebar
-            navigate={navigate}
-            user={user}
-            users={users}
-            recipient={recipient}
-            setRecipient={setRecipient}
-            showSidebar={showSidebar}
-            setShowSidebar={setShowSidebar}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            searchResults={searchResults}
-            searchUsers={searchUsers}
-            setUser={setUser}
+      <Sidebar
+        navigate={navigate}
+        user={user}
+        users={users}
+        recipient={recipient}
+        setRecipient={setRecipient}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        searchResults={searchResults}
+        searchUsers={searchUsers}
+        setUser={setUser}
+      />
+
+      <main className="chat-box">
+        <div className="profile-section1">
+          <button onClick={() => setShowSidebar(!showSidebar)} className="toggle-sidebar-btn">
+            &larr;
+          </button>
+
+          <div className="profile-section" onClick={() => setShowRecipientProfile(true)}>
+            <img
+              src={
+                recipientDetails.profilePic ||
+                'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'
+              }
+              alt="Profile"
+              className="profile-pic-small"
+            />
+            <h2>{recipientDetails.username || '...'}</h2>
+            
+          </div>
+           <div className="call-controls">
+        {!isCalling && !isInCall && (
+          <button 
+          onClick={() => {startCall (); setShowCallComponent(true);}} 
+          className="call-button">
+            Start Call
+          </button>
+        )}
+        
+      </div>
+        </div>
+
+        <MessageList
+          messages={messages}
+          user={user}
+          handleSeen={handleSeen}
+          messagesEndRef={messagesEndRef}
+        />
+
+        {typing && <div className="typing-indicator">{recipientDetails.username} is typing...</div>}
+
+        <form onSubmit={handleSend} className="message-form">
+          <input
+            className="input-message"
+            type="text"
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+              handleTyping();
+            }}
+            placeholder="Type a message..."
           />
 
-          <main className="chat-box">
-            <div className="profile-section">
-              <button onClick={() => setShowSidebar(!showSidebar)} className="toggle-sidebar-btn">&larr;</button>  
-             <div className="profile-section" onClick={() => setShowRecipientProfile(true)}>
-              <img
-                src={
-                  recipientDetails.profilePic ||
-                  'https://res.cloudinary.com/dxjfdwjbw/image/upload/v1757265803/default-avatar-profile-icon-of-social-media-user-vector_xmxsmv.jpg'
-                }
-                alt="Profile"
-                className="profile-pic-small"
-              />
-              <h2>{recipientDetails.username || '...'}</h2>
-              </div>
-            </div>
-            <MessageList
-              messages={messages}
-              user={user}
-              handleSeen={handleSeen}
-              messagesEndRef={messagesEndRef}
-            />
-
-            {typing && <div className="typing-indicator">{recipientDetails.username} is typing...</div>}
-    
-
-           
-            <form onSubmit={handleSend} className='message-form'>
-              <input
-              className='input-message'
-                type="text"
-                value={content}
-                onChange={(e) =>{ 
-                  setContent(e.target.value) ;
-                   handleTyping()}}
-                placeholder="Type a message..."
-              />
-              <label htmlFor="file-upload" className="file-upload-label">
+          <label htmlFor="file-upload" className="file-upload-label">
             <img src={uploadIcon} alt="Upload" className="upload-icon" />
           </label>
           <input
@@ -296,15 +310,40 @@ const Chat = ({ user , setUser }) => {
             className="input-file"
             style={{ display: 'none' }}
           />
-              <button type="submit" className='send-button'>Send</button>
-            </form>
-          </main>
+
+          <button type="submit" className="send-button">
+            Send
+          </button>
+        </form>
+      </main>
+
       {showRecipientProfile && (
-          <RecipientProfile
-            recipient={recipientDetails}
-            onClose={() => setShowRecipientProfile(false)}
-          />
-        )}
+        <RecipientProfile recipient={recipientDetails} onClose={() => setShowRecipientProfile(false)} />
+      )}
+     {showCallComponent && (
+      <Call
+       user={user}
+        recipient={recipientDetails}
+        isCalling={isCalling}
+        isInCall={isInCall}
+        onEndCall={() => {endCall(); setShowCallComponent(false);}}
+         onClose={() => setShowCallComponent(false)} />
+     )}
+     
+{incomingCall && (
+  <div className='modal-overlay'>
+  <div className="incoming-call-modal">
+    <p>{callerInfo} is calling...</p>
+    <button onClick={() => {
+      acceptCall () ; 
+      setShowCallComponent (true) }} className="accept-call-button">Accept</button>
+    <button onClick={denyCall} className="deny-call-button">Deny</button>
+  </div>
+  </div>
+)}
+
+      <audio ref={localStreamRef} autoPlay muted />
+      <audio ref={remoteStreamRef} autoPlay />
     </div>
   );
 };
