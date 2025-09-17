@@ -56,7 +56,11 @@ const useVoiceCall = ({ user, recipient }) => {
     };
 
     peerConnection.onconnectionstatechange = () => {
-      console.log('[PeerConnection] State:', peerConnection.connectionState);
+      if (peerConnection.connectionState === 'disconnected') {
+        setIsInCall(false);
+ console.log('[PeerConnection] State:', peerConnection.connectionState);
+      }
+     
     };
 
     peerConnection.oniceconnectionstatechange = () => {
@@ -101,6 +105,7 @@ const useVoiceCall = ({ user, recipient }) => {
 
     socket.current.on('disconnect', () => {
       console.log('[Socket] Disconnected');
+      setIsInCall(false);
     });
 
     return () => {
@@ -114,7 +119,7 @@ const useVoiceCall = ({ user, recipient }) => {
     try {
       initializePeerConnection();
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true  , video: true});
       console.log('[Media] Got local audio stream');
 
       localStreamRef.current.srcObject = stream;
@@ -148,7 +153,7 @@ const useVoiceCall = ({ user, recipient }) => {
 
     initializePeerConnection();
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true  , video: true });
     console.log('[Media] Got local audio stream for incoming call');
     localStreamRef.current.srcObject = stream;
 
@@ -202,8 +207,15 @@ const useVoiceCall = ({ user, recipient }) => {
     setIsInCall(false);
     console.log('[Call] Reset call state');
   };
+const toggleVideo = () => {
+  const videoTrack = localStreamRef.current?.srcObject?.getVideoTracks()[0];
+  if (videoTrack) {
+    videoTrack.enabled = !videoTrack.enabled;
+  }
+};
 
   return {
+    toggleVideo,
     startCall,
     endCall,
     acceptCall,

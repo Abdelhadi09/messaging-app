@@ -7,6 +7,7 @@ import './Chat.css';
 import Sidebar from './Sidebar';
 import MessageList from './MessageList';
 import uploadIcon from '../images/image (2).png';
+import phone from '../images/telephone.png';
 import Profile from './Profile';
 import RecipientProfile from './RecipientProfile';
 import Call from './Call';
@@ -32,6 +33,7 @@ const Chat = ({ user, setUser }) => {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const {
+  toggleVideo,
   startCall,
   endCall,
   acceptCall,
@@ -251,11 +253,12 @@ const {
 
       <main className="chat-box">
         <div className="profile-section1">
-          <button onClick={() => setShowSidebar(!showSidebar)} className="toggle-sidebar-btn">
-            &larr;
-          </button>
+          
 
           <div className="profile-section" onClick={() => setShowRecipientProfile(true)}>
+            <button onClick={() => setShowSidebar(!showSidebar)} className="toggle-sidebar-btn">
+            &larr;
+          </button>
             <img
               src={
                 recipientDetails.profilePic ||
@@ -267,16 +270,16 @@ const {
             <h2>{recipientDetails.username || '...'}</h2>
             
           </div>
-           <div className="call-controls">
+           
         {!isCalling && !isInCall && (
           <button 
           onClick={() => {startCall (); setShowCallComponent(true);}} 
           className="call-button">
-            Start Call
+            <img src={phone} alt="Call" className="call-icon" />
           </button>
         )}
         
-      </div>
+     
         </div>
 
         <MessageList
@@ -320,12 +323,15 @@ const {
       {showRecipientProfile && (
         <RecipientProfile recipient={recipientDetails} onClose={() => setShowRecipientProfile(false)} />
       )}
-     {showCallComponent && (
+     {(isCalling || isInCall) && (
       <Call
        user={user}
         recipient={recipientDetails}
         isCalling={isCalling}
         isInCall={isInCall}
+        localStreamRef={localStreamRef}
+        remoteStreamRef={remoteStreamRef}
+        toggleVideo={toggleVideo}
         onEndCall={() => {endCall(); setShowCallComponent(false);}}
          onClose={() => setShowCallComponent(false)} />
      )}
