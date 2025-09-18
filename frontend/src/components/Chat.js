@@ -3,10 +3,10 @@ import axios from 'axios';
 import Pusher from 'pusher-js';
 import { useNavigate } from 'react-router-dom';
 import './Chat.css';
-
+import send from '../images/envoyer.png';
 import Sidebar from './Sidebar';
 import MessageList from './MessageList';
-import uploadIcon from '../images/image (2).png';
+import uploadIcon from '../images/camera.png';
 import phone from '../images/telephone.png';
 import Profile from './Profile';
 import RecipientProfile from './RecipientProfile';
@@ -315,7 +315,7 @@ const {
           />
 
           <button type="submit" className="send-button">
-            Send
+            <img src={send} alt="Send" className="send-icon" />
           </button>
         </form>
       </main>

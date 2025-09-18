@@ -38,6 +38,12 @@
   z-index: 3;
   color: white;
   font-size: 1.5rem;
+  display: flex;
+  padding: 10px;
+}
+.call-header h2 {
+  margin: 0;
+  margin-left: 10px;
 }
 
 /* Controls sit above remote video */

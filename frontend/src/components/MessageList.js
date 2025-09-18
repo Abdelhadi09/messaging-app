@@ -170,8 +170,8 @@ const handleDelete = (messageId) => deleteMessage(messageId);
           {/* Show current reactions below each message */}
 {messageReactions[msg._id] && (
   <div className="current-reactions">
-    {messageReactions[msg._id].senderReaction && <span>Sender: {messageReactions[msg._id].senderReaction}</span>}
-    {messageReactions[msg._id].recipientReaction && <span>Recipient: {messageReactions[msg._id].recipientReaction}</span>}
+    {messageReactions[msg._id].senderReaction && <span>{messageReactions[msg._id].senderReaction}</span>}
+    {messageReactions[msg._id].recipientReaction && <span> {messageReactions[msg._id].recipientReaction}</span>}
   </div>
 )}
         </div>
