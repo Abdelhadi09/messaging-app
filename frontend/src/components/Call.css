@@ -1,148 +1,77 @@
-/* @keyframes slideInFromRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-@keyframes slideOutToRight {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-.call-panel {
-
-  width: 30%;
-  height: 100%;
-  background-color: #f9f9f9;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.close-btn {
-  align-self: flex-end;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.call-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.call-profile-pic {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 10px;
-}
-
-.call-controls {
-  
-  display: flex;
-  justify-content: space-around;
-}
-
-.mute-btn , .end-call-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 24px;
-  cursor: pointer;
-}
-.local-video, .remote-video {
-}
-@media (max-width: 768px) {
-  .call-panel {
-    width: 100%;
-    padding: 10px;
-  }
-}
-
-
-
-
-
- */
 .call-container {
   position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: #1a1a1a;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: black;
 }
 
-.call-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding:  5px;
-  background-color: #1a1a1a;
-  color: white;
-}
-
-.timestamp {
-  font-size: 0.9rem;
-  color: #aaa;
-}
-
-.video-wrapper {
-  position: relative;
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 75%;
-}
-
+/* Remote video fills the entire screen */
 .remote-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 1;
 }
 
+/* Local video floats in the corner */
 .local-video {
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 25%;
+  width: 30%;
   height: 25%;
-  border: 2px solid white;
-  border-radius: 8px;
+  border-radius: 10px;
   object-fit: cover;
-  z-index: 10;
+  z-index: 2;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.call-controls {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 15px;
-  background-color: #1a1a1a;
-}
-
-.call-controls button {
-  background-color: #333;
+/* Header sits above remote video */
+.call-header {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
   color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
+  font-size: 1.5rem;
 }
+
+/* Controls sit above remote video */
+.call-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1); /* translucent white */
+  backdrop-filter: blur(10px); /* glass blur */
+  -webkit-backdrop-filter: blur(10px); /* Safari support */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* subtle border */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* depth */
+  border-radius: 24px;
+}
+
+/* Optional: style buttons inside */
+.call-controls button {
+  padding: 10px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 16px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  transition: background-color 0.3s ease;
+}
+
+.call-controls button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+

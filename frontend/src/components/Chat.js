@@ -233,7 +233,7 @@ const {
 
     fetchRecipientDetails();
   }, [recipient, user.token]);
-
+  console.log (user.token)
   return (
     <div className="chat-container">
       <Sidebar

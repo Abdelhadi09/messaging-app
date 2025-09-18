@@ -15,6 +15,7 @@
   padding: 20px;
   overflow-y: auto;
   z-index: 0; 
+  padding-top: 0%;
 }
 
 .chat-box::before {
@@ -79,7 +80,12 @@
   border-radius: 8px;
   margin-top: 5px;
 }
-
+.profile-section1{
+  background-color: rgba(254, 245, 251, 0.85);
+  padding: 0px 5px;
+  border-radius: 0 0 24px 24px;
+  margin-bottom: 5px;
+}
 /* Styles for the image preview modal */
 .image-preview-modal {
   position: fixed;
@@ -159,7 +165,7 @@
 }
 .call-button{
    padding: 5px;
-   background-color: rgba(254, 245, 251, 0.85);
+   background: none;
   border-radius: 24px;
 }
 
@@ -231,7 +237,7 @@ font-size: 1.5rem ;
   padding: 5px 10px;
 }
 .profile-section1{
-  background-color: #ffe2f8;
+  background-color: rgba(254, 245, 251, 0.85);
   padding: 0px 5px;
   border-radius: 0 0 24px 24px;
   margin-bottom: 5px;

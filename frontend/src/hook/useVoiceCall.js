@@ -122,7 +122,9 @@ const useVoiceCall = ({ user, recipient }) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true  , video: true});
       console.log('[Media] Got local audio stream');
 
+     setTimeout(() => {
       localStreamRef.current.srcObject = stream;
+    }, 500);
       stream.getTracks().forEach((track) => {
         peerConnectionRef.current.addTrack(track, stream);
         console.log('[Media] Track added to PeerConnection');

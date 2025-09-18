@@ -14,8 +14,6 @@ const Call = ({
     <div className="call-container">
   <div className="call-header">
     <h2>{recipient.username}</h2>
-    <span className="timestamp">12:45</span>
-    <button className="close-btn" onClick={onClose}>&times;</button>
   </div>
 
   <div className="video-wrapper">
