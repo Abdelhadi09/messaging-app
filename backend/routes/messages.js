@@ -182,4 +182,25 @@ router.get('/last', auth, async (req, res) => {
   }
 });
 
+const mongoose = require('mongoose');
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const messageId = req.params.id;
+    console.log('Delete request for message ID:', messageId);
+    const message = await Message.findById(messageId);
+    console.log('Message found:', message);
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+    if (message.sender !== req.user.username) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+    await message.deleteOne();
+    res.json({ message: 'Message deleted' });
+  } catch (err) {
+    console.error('Error deleting message:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;

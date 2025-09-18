@@ -9,6 +9,7 @@ const { Server } = require('socket.io');
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
 const onlineUsersRoutes = require('./routes/onlineUsers'); // Import online users routes
+const reactionsRoutes = require('./routes/reactions');
 const Message = require('./models/Message');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/online-users', onlineUsersRoutes); // Add route for online users
+app.use('/api/reactions', reactionsRoutes);
 
 // Periodic cleanup of expired messages
 setInterval(async () => {
