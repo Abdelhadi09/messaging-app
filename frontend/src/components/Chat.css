@@ -56,6 +56,25 @@
   font-size: 15px;
   width: 70%;
 }
+.voice-recorder-button {
+   font-family: "Sour Gummy", sans-serif;
+  padding: 10px 16px;
+  background: none;
+  color: white;
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.voice-recorder-button:hover {
+  background-color: rgba(254, 245, 251, 1);
+}
+.voice-recorder-icon {
+  width: 24px;
+  height: 24px;
+  z-index: 1;
+  display: inline-block;
+}
 
 .send-button {
    font-family: "Sour Gummy", sans-serif;

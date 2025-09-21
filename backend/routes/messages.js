@@ -1,3 +1,4 @@
+
 const express = require('express');
 const cloudinary = require('../config/Cloudinary');
 const Message = require('../models/Message');
@@ -200,6 +201,48 @@ router.delete('/:id', auth, async (req, res) => {
   } catch (err) {
     console.error('Error deleting message:', err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Upload an audio file and send as a message
+router.post('/upload-audio', auth, upload.single('audio'), async (req, res) => {
+  try {
+    const file = req.file;
+    const { recipient } = req.body;
+    if (!file) {
+      return res.status(400).json({ message: 'Audio file is required' });
+    }
+    // Upload audio to Cloudinary
+    const result = await cloudinary.uploader.upload(file.path, {
+      resource_type: 'auto',
+      folder: 'messaging-app/audio',
+      public_id: file.originalname,
+      use_filename: false,
+      unique_filename: false,
+      access_mode: 'public',
+      timeout: 60000,
+      overwrite: true,
+    });
+    // Create a new message with audio metadata
+    const message = new Message({
+      sender: req.user.username,
+      recipient,
+      fileUrl: result.secure_url,
+      fileType: result.resource_type,
+      content: '[Audio message]',
+      expiresAt: new Date(Date.now() + 60 * 1000),
+    });
+    await message.save();
+    // Delete the file from uploads folder after Cloudinary processing
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.error('Failed to delete file:', err);
+      }
+    });
+    res.status(201).json({ message: 'Audio uploaded and message sent.', data: message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to upload audio and send message.' });
   }
 });
 

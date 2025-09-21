@@ -12,6 +12,8 @@ import Profile from './Profile';
 import RecipientProfile from './RecipientProfile';
 import Call from './Call';
 import useVoiceCall from '../hook/useVoiceCall'; 
+import VoiceRecorder from './VoiceRecorder';
+import mic from '../images/microphone.png';
 
 const Chat = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -27,6 +29,7 @@ const Chat = ({ user, setUser }) => {
   const [recipientDetails, setRecipientDetails] = useState({ username: '', profilePic: '' });
   const [showRecipientProfile, setShowRecipientProfile] = useState(false);
   const [showCallComponent, setShowCallComponent] = useState(false);
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
 
   const messagesEndRef = useRef(null);
 
@@ -233,7 +236,7 @@ const {
 
     fetchRecipientDetails();
   }, [recipient, user.token]);
-  
+  console.log (user.token)
   return (
     <div className="chat-container">
       <Sidebar
@@ -290,7 +293,12 @@ const {
         />
 
         {typing && <div className="typing-indicator">{recipientDetails.username} is typing...</div>}
-
+       { showVoiceRecorder && 
+        <VoiceRecorder 
+        user={user}
+        recipient={recipient}/>
+       }
+        
         <form onSubmit={handleSend} className="message-form">
           <input
             className="input-message"
@@ -302,7 +310,9 @@ const {
             }}
             placeholder="Type a message..."
           />
-
+          <button type="button" className="voice-recorder-button" onClick={() => setShowVoiceRecorder(!showVoiceRecorder)}>
+            <img src={mic} alt="Voice Recorder" className="voice-recorder-icon" />
+          </button>
           <label htmlFor="file-upload" className="file-upload-label">
             <img src={uploadIcon} alt="Upload" className="upload-icon" />
           </label>

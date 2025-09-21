@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './MessageList.css';
 import axios from 'axios';
+import VoiceMessage from './VoiceMessage';
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const MessageList = ({ messages, user, handleSeen, messagesEndRef }) => {
@@ -80,6 +81,7 @@ const handleDelete = (messageId) => deleteMessage(messageId);
     console.error("Error deleting message");
   }
 };
+
   return (
     <div className="messages">
       {messages.map((msg, index) => (
@@ -93,7 +95,9 @@ const handleDelete = (messageId) => deleteMessage(messageId);
         >
          <div className="message-content">
   {msg.content}
-
+{msg.fileUrl && msg.content=='[Audio message]' && (
+ <VoiceMessage url={msg.fileUrl} />
+)}
   {/* Render image preview */}
   {msg.fileUrl && msg.fileType.startsWith('image') && !msg.fileUrl.endsWith('.pdf')  && (
     <img
@@ -126,7 +130,8 @@ const handleDelete = (messageId) => deleteMessage(messageId);
   {/* Render other file types as download links */}
 {msg.fileUrl &&
   !msg.fileType.startsWith('image') &&
-  !msg.fileUrl.toLowerCase().endsWith('.pdf') && (
+  !msg.fileUrl.toLowerCase().endsWith('.pdf') &&
+  msg.content !=='[Audio message]' &&(
     <div className="file-card">
       <div className="file-icon">{getFileIcon(msg.fileType)}</div>
       <div className="file-details">
