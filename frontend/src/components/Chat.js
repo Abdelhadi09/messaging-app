@@ -360,7 +360,7 @@ const {
 {incomingCall && (
   <div className='modal-overlay'>
   <div className="incoming-call-modal">
-    <p>{callerInfo} is calling...</p>
+    <p>{recipient} is calling...</p>
     <button onClick={() => {
       acceptCall () ; 
       setShowCallComponent (true) }} className="accept-call-button">Accept</button>

@@ -7,7 +7,7 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const MessageList = ({ messages, user, handleSeen, messagesEndRef }) => {
   const [previewImage, setPreviewImage] = useState(null); // State for image preview
   const reactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
-  const [showReactions, setShowReactions] = useState(false);
+  const [showingReactionsForId, setShowingReactionsForId] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
 
 // Fetch reactions for all messages (optional, can be optimized)
@@ -91,7 +91,14 @@ const handleDelete = (messageId) => deleteMessage(messageId);
           onMouseEnter={() => {
             if (msg.sender !== user.username) handleSeen(msg._id);
           }}
-          onClick={() => { setShowReactions(!showReactions); }}
+          onClick={() => {
+  if (showingReactionsForId === msg._id) {
+    setShowingReactionsForId(null);
+  } else {
+    setShowingReactionsForId(msg._id);
+  }
+}}
+
         >
          <div className="message-content">
   {msg.content}
@@ -154,7 +161,7 @@ const handleDelete = (messageId) => deleteMessage(messageId);
             {msg.sender === user.username && msg.seen && <span className="status">✔✔</span>}
             {msg.sender === user.username && msg.delivered && !msg.seen && <span className="status">✔</span>}
           </div>
-          {showReactions && (
+          {showingReactionsForId === msg._id && (
             <div className="reactions">
               {reactions.map((reaction, idx) => (
                 <span
@@ -162,7 +169,7 @@ const handleDelete = (messageId) => deleteMessage(messageId);
                   className="reaction"
                   onClick={() => {
                     handleReaction(msg._id, reaction);
-                    setShowReactions(false);
+                    setShowingReactionsForId(null);
                   }}
                 >
                   {reaction}
