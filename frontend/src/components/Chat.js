@@ -236,7 +236,15 @@ const {
 
     fetchRecipientDetails();
   }, [recipient, user.token]);
-  console.log (user.token)
+  
+  const handleFinishedRecording = () => {
+    setShowVoiceRecorder(false);
+  };
+
+  const handleCancelRecording = () => {
+    setShowVoiceRecorder(false);
+  };
+
   return (
     <div className="chat-container">
       <Sidebar
@@ -296,7 +304,10 @@ const {
        { showVoiceRecorder && 
         <VoiceRecorder 
         user={user}
-        recipient={recipient}/>
+        recipient={recipient}
+         onFinished={handleFinishedRecording}
+          onCancel={handleCancelRecording}
+        />
        }
         
         <form onSubmit={handleSend} className="message-form">
