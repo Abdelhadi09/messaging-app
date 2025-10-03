@@ -7,18 +7,36 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploaded files
 const cloudinary = require('../config/Cloudinary');
 const fs = require('fs');
+const mailer = require('nodemailer');
 
 const router = express.Router();
 
+const trensporter = mailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 // Register
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password  ,email} = req.body;
   try {
     let user = await User.findOne({ username });
     if (user) return res.status(400).json({ message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    user = await User.create({ username, password: hashedPassword });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+    user = await User.create({ username, password: hashedPassword , email  , otp, otpExpiry });
+
+    await trensporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Verify your email',
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    });
 
     const token = jwt.sign(
       { id: user._id, username: user.username },
@@ -33,9 +51,29 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.post('/verify-otp', async (req, res) => {
+  const { username, otp } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (user.isVerified) return res.status(400).json({ message: 'User already verified' });
+    if (user.otp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
+    if (Date.now() > user.otpExpiry) return res.status(400).json({ message: 'OTP expired' }); 
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+    res.json({ message: 'Email verified successfully' });
+    console.log(`User verified: ${username}`);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 // Login
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password  } = req.body;
   try {
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
