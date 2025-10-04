@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -15,7 +16,12 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     try {
       const res = await axios.post(`${API_BASE_URL}/api/auth/verify-otp`, { username, otp });
-      setMessage(res.data.message);
+      setMessage(res.data.message).then(() => {
+        setTimeout(() => {
+          window.location.href = "/login"; // Redirect to login page
+        }, 2000);
+      });
+      
     } catch (err) {
       if (err.response) {
         setMessage(err.response.data.message);

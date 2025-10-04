@@ -22,7 +22,8 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 30%;
+  aspect-ratio: 1;
+  width: 25%;
   height: 25%;
   border-radius: 10px;
   object-fit: cover;
